@@ -8,12 +8,12 @@ module.exports = (app) => {
 
   app.on("project.created", async (context) =>{
     let projId = context.payload.project.id;
-    const cols = ["New Issues", "Product Backlog (Stories)", "Sprint 0 Backlog (Stories)", "Sprint 0 Backlog (Tasks)", "In Progress", "Review/QA", "Closed"];
-
-    for (const col of cols) {
+    const colNames = ["New Issues", "Product Backlog (Stories)", "Sprint 0 Backlog (Stories)", "Sprint 0 Backlog (Tasks)", "In Progress", "Review/QA", "Closed"];
+    //Add column for each name when project is created
+    for (const name of colNames) {
       context.octokit.projects.createColumn({
         project_id: projId,
-        name: col
+        name: name
       });
     }
   });
