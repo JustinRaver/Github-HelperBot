@@ -16,6 +16,14 @@ module.exports = (app) => {
         name: name
       });
     }
+
+    const repo = context.payload.repository.name;
+    const repoOwner =  context.payload.repository.owner.login;
+    const labels = context.octokit.issues.listLabelsForRepo({
+      owner: repoOwner,
+      repo: repo
+    })
+
   });
 
   app.on("issues.opened", async (context) => {
