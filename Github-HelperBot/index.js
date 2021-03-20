@@ -3,12 +3,9 @@
  * @param {import('probot').Probot} app
  */
 module.exports = (app) => {
-  // Your code here
   app.log.info("Yay, the app was loaded!");
 
   app.on("installation_repositories.added", async (context) =>{
-    const labelNames = ["documentation :page_facing_up:","enhancement","question :question:","low-priority","medium-priority","high-priority :exclamation:","story :book:","epic","task", "bug :book:"];
-    const labelColors = ["0075ca","a2eeef","d876e3","2dc937","e7b416","ff6600","355c7d","1143a9","a1e9ea","d73a4a"];
     const repos = context.payload.repositories_added;
     const repoOwner =  context.payload.sender.login;
 
@@ -18,6 +15,7 @@ module.exports = (app) => {
         owner: repoOwner,
         repo:repo.name
       })
+
       //The current repos list of labels
       const repoLabels = new Set();
       labels.forEach(function(label){
@@ -25,9 +23,10 @@ module.exports = (app) => {
         app.log.info(label.name);
       })
 
-      app.log.info(repo.name);
-      app.log.info(repoOwner);
-      app.log.info(repo.full_name);
+      //label names and colors *** both arrays depend are order dependent ***
+      const labelNames = ["documentation :page_facing_up:","enhancement","question :question:","low-priority","medium-priority","high-priority :exclamation::exclamation:","story :book:","epic","task", "bug :bug:"];
+      const labelColors = ["0075ca","a2eeef","d876e3","2dc937","e7b416","ff6600","355c7d","1143a9","a1e9ea","d73a4a"];
+      //Make all the specified labels
       for (let i=0; i<labelColors.length; i++) {
         if (!repoLabels.has(labelNames[i])) {
         context.octokit.issues.createLabel({
