@@ -16,11 +16,13 @@ module.exports = (app) => {
                 repo: repo.name
             })
 
-            //The current repos list of labels
-            const repoLabels = new Set();
+            // Delete All default RepoLabels
             labels.forEach(function (label) {
-                repoLabels.add(label.name);
-                app.log.info(label.name);
+              context.octokit.issues.deleteLabel({
+                owner: repoOwner,
+                repo: repo.name,
+                name: label.name,
+              });
             })
 
             //label names and colors *** both arrays depend are order dependent ***
@@ -28,14 +30,12 @@ module.exports = (app) => {
             const labelColors = ["0075ca", "a2eeef", "d876e3", "2dc937", "e7b416", "ff6600", "355c7d", "1143a9", "a1e9ea", "d73a4a"];
             //Make all the specified labels
             for (let i = 0; i < labelColors.length; i++) {
-                if (!repoLabels.has(labelNames[i])) {
                     context.octokit.issues.createLabel({
                         owner: repoOwner,
                         repo: repo.name,
                         name: labelNames[i],
                         color: labelColors[i]
                     });
-                }
             }
         }
     });
