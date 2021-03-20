@@ -6,6 +6,29 @@ module.exports = (app) => {
   // Your code here
   app.log.info("Yay, the app was loaded!");
 
+  app.on("installation_repositories.added", async (context) =>{
+    let labelNames = ["documentation","enhancement","question","low-priority","medium-priority","high-priority","story","epic","task", "bug"];
+    let labelColors = ["#0075ca","#a2eeef","#d876e3","#2dc937","#e7b416","#ff6600","#355c7d","#1143a9","#a1e9ea","#d73a4a"];
+    const repos = context.payload.repositories_added;
+    const repoOwner =  context.payload.sender.login;
+
+    for (const repo of repos) {
+      //Get all labels for the repository
+      let {data: labels} = await context.octokit.issues.listLabelsForRepo ({
+        owner: repoOwner,
+        repo:repo.name
+      })
+      //The current repos list of labels
+      const repoLabels = new Set();
+      labels.forEach(function(label){
+        repoLabels.add(label.name);
+      })
+
+
+    }
+
+  });
+
   app.on("project.created", async (context) =>{
     let projId = context.payload.project.id;
     const colNames = ["New Issues", "Product Backlog (Stories)", "Sprint 0 Backlog (Stories)", "Sprint 0 Backlog (Tasks)", "In Progress", "Review/QA", "Closed"];
@@ -16,14 +39,6 @@ module.exports = (app) => {
         name: name
       });
     }
-
-    const repo = context.payload.repository.name;
-    const repoOwner =  context.payload.repository.owner.login;
-    const labels = context.octokit.issues.listLabelsForRepo({
-      owner: repoOwner,
-      repo: repo
-    })
-
   });
 
   app.on("issues.opened", async (context) => {
