@@ -61,8 +61,9 @@ module.exports = (app) => {
     });
 
     app.on("push", async (context) => {
+        //branch pushed to
         let branch = context.payload.ref;
-
+        //ensure that the config is only read on the master branch
         if(branch === "refs/heads/master" || branch === "refs/heads/main") {
 
             let repo = context.payload.repository.name;
@@ -90,11 +91,12 @@ module.exports = (app) => {
                 });
                 let atob = require('atob')
                 const decodedContent = atob(readme.content);
-                //print result
                 app.log.info(decodedContent);
 
+                //set the name of the config section in the readme
+                const configSectionName = "Github-HelperBot-Config";
                 //testing for the config section
-                if (decodedContent.includes("Github-HelperBot-Config")) {
+                if (decodedContent.includes(configSectionName)) {
                     app.log.info("Config section found");
                 }
             }
