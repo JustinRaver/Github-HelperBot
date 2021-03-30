@@ -60,6 +60,44 @@ module.exports = (app) => {
         return context.octokit.issues.createComment(issueComment);
     });
 
+    app.on("push", async (context) => {
+        let repo = context.payload.repository.name;
+        let owner = context.payload.repository.owner.login;
+
+        //list the commits that occurred
+        let commits = context.payload.commits;
+        //keep track of whether the read me was updated during push
+        let readmeUpdated = new Boolean(false);
+        let fileName = "README.md";
+
+        commits.forEach(function (commit){
+            commit.modified.forEach(function (file){
+                if(file == fileName){
+                    readmeUpdated = true;
+                    return;
+                }
+            })
+        })
+
+        if(readmeUpdated == true) {
+            //getting a readme
+            let {data: readme} = await context.octokit.repos.getReadme({
+                owner: owner,
+                repo: repo,
+            });
+
+            //require atob function
+            let atob = require('atob')
+            //decode base64
+            const decodedContent = atob(readme.content);
+            //print result
+            app.log.info(decodedContent);
+            if(decodedContent.includes("test")){
+                app.log.info("Test found");
+            }
+        }
+    });
+
     // For more information on building apps:
     // https://probot.github.io/docs/
 
