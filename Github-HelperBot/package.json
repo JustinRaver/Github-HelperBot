@@ -16,6 +16,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "atob": "^2.1.2",
     "probot": "^11.0.1"
   },
   "devDependencies": {

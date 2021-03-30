@@ -67,19 +67,18 @@ module.exports = (app) => {
         //list the commits that occurred
         let commits = context.payload.commits;
         //keep track of whether the read me was updated during push
-        let readmeUpdated = new Boolean(false);
+        let readmeUpdated = Boolean(false);
         let fileName = "README.md";
 
         commits.forEach(function (commit){
             commit.modified.forEach(function (file){
-                if(file == fileName){
+                if(file === fileName){
                     readmeUpdated = true;
-                    return;
                 }
             })
         })
 
-        if(readmeUpdated == true) {
+        if(readmeUpdated === true) {
             //getting a readme
             let {data: readme} = await context.octokit.repos.getReadme({
                 owner: owner,
