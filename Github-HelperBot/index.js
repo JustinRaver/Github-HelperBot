@@ -60,6 +60,28 @@ module.exports = (app) => {
         return context.octokit.issues.createComment(issueComment);
     });
 
+    app.on("issues.labeled", async (context) => {
+        if(context.payload.label.name == "bug :bug:") {
+            let priorityFound = false;
+            context.payload.issue.labels.forEach(function (label) {
+                if (label == "high-priority :exclamation::exclamation:") {
+                    priorityFound = true;
+                }
+            })
+            if (!priorityFound) {
+                const repoOwner = context.payload.issue.user.login;
+                const repo = context.payload.repository.name;
+                const issNum = context.payload.issue.number;
+                context.octokit.issues.addLabels({
+                    owner: repoOwner,
+                    repo: repo,
+                    issue_number: issNum,
+                    labels: "high-priority :exclamation::exclamation:"
+                });
+            }
+        }
+    });
+
     // For more information on building apps:
     // https://probot.github.io/docs/
 
