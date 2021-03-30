@@ -61,37 +61,42 @@ module.exports = (app) => {
     });
 
     app.on("push", async (context) => {
-        let repo = context.payload.repository.name;
-        let owner = context.payload.repository.owner.login;
+        let branch = context.payload.ref;
 
-        //list the commits that occurred
-        let commits = context.payload.commits;
-        //keep track of whether the read me was updated during push
-        let readmeUpdated = Boolean(false);
-        let fileName = "README.md";
+        if(branch === "refs/heads/master" || branch === "refs/heads/main") {
 
-        commits.forEach(function (commit){
-            commit.modified.forEach(function (file){
-                if(file === fileName){
-                    readmeUpdated = true;
-                }
+            let repo = context.payload.repository.name;
+            let owner = context.payload.repository.owner.login;
+
+            //list the commits that occurred
+            let commits = context.payload.commits;
+            //keep track of whether the read me was updated during push
+            let readmeUpdated = Boolean(false);
+            let fileName = "README.md";
+
+            commits.forEach(function (commit) {
+                commit.modified.forEach(function (file) {
+                    if (file === fileName) {
+                        readmeUpdated = true;
+                    }
+                })
             })
-        })
 
-        if(readmeUpdated === true) {
-            //getting a readme
-            let {data: readme} = await context.octokit.repos.getReadme({
-                owner: owner,
-                repo: repo,
-            });
-            let atob = require('atob')
-            const decodedContent = atob(readme.content);
-            //print result
-            app.log.info(decodedContent);
+            if (readmeUpdated === true) {
+                //getting a readme
+                let {data: readme} = await context.octokit.repos.getReadme({
+                    owner: owner,
+                    repo: repo,
+                });
+                let atob = require('atob')
+                const decodedContent = atob(readme.content);
+                //print result
+                app.log.info(decodedContent);
 
-            //testing for the config section
-            if(decodedContent.includes("Github-HelperBot-Config")){
-                app.log.info("Config section found");
+                //testing for the config section
+                if (decodedContent.includes("Github-HelperBot-Config")) {
+                    app.log.info("Config section found");
+                }
             }
         }
     });
