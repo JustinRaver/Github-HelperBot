@@ -84,15 +84,14 @@ module.exports = (app) => {
                 owner: owner,
                 repo: repo,
             });
-
-            //require atob function
             let atob = require('atob')
-            //decode base64
             const decodedContent = atob(readme.content);
             //print result
             app.log.info(decodedContent);
-            if(decodedContent.includes("test")){
-                app.log.info("Test found");
+
+            //testing for the config section
+            if(decodedContent.includes("Github-HelperBot-Config")){
+                app.log.info("Config section found");
             }
         }
     });
